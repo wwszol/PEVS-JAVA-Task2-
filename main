@@ -1,0 +1,162 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) throws IOException, ParseException
+    {
+        int choice = -1;
+        int choice2 = -1;
+        FileWriter writer1 = new FileWriter("crmsolved.csv", true);
+        FileWorker littleHelper = new FileWorker();
+        String input_path="crmdb.csv";
+        ArrayList<Task> database = new ArrayList<>();
+        littleHelper.readme(input_path,database);
+
+            while (choice != 0)
+            {
+                Collections.sort(database);
+                Scanner userinput = new Scanner(System.in);
+                littleHelper.primaryMenu();
+                choice = userinput.nextInt();
+
+                switch (choice)
+                    {
+                    case 1:
+                        {
+                        for (Task p : database)
+                        {
+                        littleHelper.nicePrint(p.getType(),p.getDescription(),(int)p.getAge(),p.urgency);
+                        System.out.println();
+                        }
+                        break;
+                        }
+                    case 2:
+                        {
+                        for (Task p : database)
+                        {
+                            if (p.getType().equals("admin"))
+                            {
+                            littleHelper.nicePrint(p.getType(),p.getDescription(),(int)p.getAge(),p.urgency);
+                            System.out.println();
+                            }
+                        }
+                        break;
+                        }
+                    case 3:
+                        {
+                        for (Task p : database)
+                        {
+                            if (p instanceof Complaints)
+                            {
+                            littleHelper.nicePrint(p.getType(),p.getDescription(),(int)p.getAge(),p.urgency);
+                            System.out.println();
+                            }
+                        }
+                        break;
+                        }
+                    case 4:
+                        {
+                        Scanner userinput2 = new Scanner(System.in);
+                        System.out.println("Next in line: ");
+                        littleHelper.nicePrint(database.get(0).getType(),database.get(0).getDescription(),(int)database.get(0).getAge(),database.get(0).urgency);
+                        littleHelper.secondaryMenu();
+                        choice2 = userinput2.nextInt();
+                            if (choice2 == 1)
+                            {
+                                for (Task p : database)
+                                {
+                                    if (p instanceof Complaints)
+                                        {
+                                            Scanner resolution = new Scanner(System.in);
+                                            System.out.println("Type your solution: ");
+                                            String solution = resolution.nextLine();
+                                            ((Complaints) p).setResolution(solution);
+                                            writer1.write(((Complaints) p).getWrite());
+                                            writer1.write("\n");
+                                            database.remove(0);
+                                            break;
+                                            }
+                                         else
+                                         {
+                                            System.out.println("Thank you finishing this task");
+                                            writer1.write(database.get(0).getWrite());
+                                            writer1.write("\n");
+                                            database.remove(0);
+                                            break;
+                                        }
+                                    }
+                            }
+                        else if(choice2 == 3)
+                            {
+                            for (Task p : database)
+                                {
+                                if (p instanceof Complaints)
+                                    {
+                                    System.out.println("Complaints cannot be delayed");
+                                    break;
+                                    }
+                                else
+                                    {
+                                    ((Administrative) p).setDelay(1);
+                                    break;
+                                    }
+                                }
+                            }
+                        else if(choice2 == 2)
+                            {
+                                for (Task p : database)
+                                {
+                                    if (p instanceof Complaints)
+                                    {
+                                    System.out.println("Complaints is cancelled and deleted");
+                                    database.remove(0);
+                                    break;
+                                    }
+                                    else
+                                    {
+                                    System.out.println("Administrative task cannot be cancelled");
+                                    break;
+                                    }
+                                }
+                            }
+                        break;
+                    }
+
+                    case 5:
+                    {
+                    FileWriter writer2 = new FileWriter("crmdb.csv");
+                        for (Task p : database)
+                        {
+                        writer2.write(p.getWrite());
+                        writer2.write("\n");
+                        }
+                    writer1.close();
+                    writer2.close();
+                    return;
+                    }
+
+                    case 6:
+                    {
+                    String input_path2="crmdaily.csv";
+                    littleHelper.readme(input_path2,database);
+                    FileWriter daily_cleaner = new FileWriter("crmdaily.csv");
+                    daily_cleaner.close();
+                    break;
+                    }
+
+                    default:
+                    {
+                    writer1.close();
+                    return;
+                    }
+            }
+        }
+    }
+
+}
